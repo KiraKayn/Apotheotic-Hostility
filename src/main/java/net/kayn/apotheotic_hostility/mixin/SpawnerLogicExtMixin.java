@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-@Mixin(targets = "dev.shadowsoffire.apotheosis.spawn.spawner.ApothSpawnerTile$SpawnerLogicExt", remap = false)
+@Mixin(value = ApothSpawnerTile.SpawnerLogicExt.class, remap = false)
 public abstract class SpawnerLogicExtMixin {
 
     @Shadow(remap = false)

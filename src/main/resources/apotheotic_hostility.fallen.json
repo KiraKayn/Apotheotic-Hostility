@@ -1,0 +1,5 @@
+{
+  "required": true,
+  "min_version": "1.2.0",
+  "mixin_connector": "net.kayn.apotheotic_hostility.FGAMixinConnector"
+}
