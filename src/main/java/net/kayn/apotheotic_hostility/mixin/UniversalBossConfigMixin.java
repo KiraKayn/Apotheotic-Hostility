@@ -22,6 +22,7 @@ public class UniversalBossConfigMixin {
             remap = false
     )
     private void filterRarityByLevel(RandomSource rand, CallbackInfoReturnable<LootRarity> cir) {
+        System.out.println("FGA ROLLRARITY MIXIN FIRED, LEVEL CONTEXT: " + MobLevelContext.get());
         int mobLevel = MobLevelContext.get();
         if (mobLevel < 0) return;
 

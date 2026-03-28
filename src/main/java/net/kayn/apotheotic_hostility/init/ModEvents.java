@@ -3,6 +3,7 @@ package net.kayn.apotheotic_hostility.init;
 import net.kayn.apotheotic_hostility.data.AffixEquipmentRuleManager;
 import net.kayn.apotheotic_hostility.data.BossScalingManager;
 import net.kayn.apotheotic_hostility.data.GemDropRuleManager;
+import net.kayn.apotheotic_hostility.data.UniversalBossLevelConfig;
 import net.kayn.apotheotic_hostility.init.loot.GemTraitLootModifier;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -16,6 +17,7 @@ public class ModEvents {
         event.addListener(GemDropRuleManager.getInstance());
         event.addListener(BossScalingManager.getInstance());
         event.addListener(AffixEquipmentRuleManager.getInstance());
+        event.addListener(UniversalBossLevelConfig.INSTANCE);
         GemTraitLootModifier.INSTANCES.clear();
     }
 }

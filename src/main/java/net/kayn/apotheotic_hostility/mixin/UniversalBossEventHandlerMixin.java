@@ -23,6 +23,7 @@ public class UniversalBossEventHandlerMixin {
             remap = false
     )
     private static void checkMinLevel(MobSpawnEvent.FinalizeSpawn event, CallbackInfo ci) {
+        System.out.println("FGA EVENT MIXIN FIRED");
         if (!ModList.get().isLoaded("fallen_gems_affixes")) return;
         if (!(event.getEntity() instanceof Mob)) return;
         Mob mob = event.getEntity();

@@ -27,12 +27,10 @@ public class UniversalBossLevelConfig extends SimpleJsonResourceReloadListener {
         RARITY_MIN_LEVELS.clear();
         for (JsonElement element : objects.values()) {
             JsonObject json = element.getAsJsonObject();
-            if (!json.has("tier_chances")) continue;
-            JsonObject tiers = json.getAsJsonObject("tier_chances");
+            if (!json.has("tier_min_levels")) continue;
+            JsonObject tiers = json.getAsJsonObject("tier_min_levels");
             for (Map.Entry<String, JsonElement> entry : tiers.entrySet()) {
-                JsonObject tierObj = entry.getValue().getAsJsonObject();
-                int minLevel = tierObj.has("min_level") ? tierObj.get("min_level").getAsInt() : 0;
-                RARITY_MIN_LEVELS.put(entry.getKey(), minLevel);
+                RARITY_MIN_LEVELS.put(entry.getKey(), entry.getValue().getAsInt());
             }
             break;
         }
