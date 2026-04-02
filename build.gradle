@@ -116,7 +116,6 @@ dependencies {
     implementation fg.deobf("curse.maven:jade-324717:${jade_file_id}")
     implementation fg.deobf("me.shedaniel.cloth:cloth-config-forge:${cloth_config_version}")
     runtimeOnly fg.deobf("curse.maven:mmmmmmmmmmmm-225738:6608233")
-    implementation fg.deobf("curse.maven:fallen-gems-affixes-1286177:7828239")
     runtimeOnly fg.deobf("curse.maven:lendercataclysm-551586:6906993")
 
     // Libs
@@ -130,7 +129,7 @@ dependencies {
 
     implementation fg.deobf("io.github.rtxyd:fallen-lib:${fallen_lib_version}:core")
     implementation fg.deobf("io.github.rtxyd:fallen-lib:${fallen_lib_version}:runtime")
-    implementation fg.deobf("curse.maven:fallen-gems-affixes-1286177:7828239")
+    implementation fg.deobf("curse.maven:fallen-gems-affixes-1286177:7863309")
 }
 
 mixin {

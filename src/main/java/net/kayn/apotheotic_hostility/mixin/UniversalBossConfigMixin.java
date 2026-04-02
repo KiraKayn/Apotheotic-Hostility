@@ -22,7 +22,6 @@ public class UniversalBossConfigMixin {
             remap = false
     )
     private void filterRarityByLevel(RandomSource rand, CallbackInfoReturnable<LootRarity> cir) {
-        System.out.println("FGA ROLLRARITY MIXIN FIRED, LEVEL CONTEXT: " + MobLevelContext.get());
         int mobLevel = MobLevelContext.get();
         if (mobLevel < 0) return;
 
@@ -31,22 +30,38 @@ public class UniversalBossConfigMixin {
 
         String eligibleRarityKey = null;
         int highestMinLevel = -1;
-
         for (Map.Entry<String, Integer> entry : minLevels.entrySet()) {
             if (mobLevel >= entry.getValue() && entry.getValue() > highestMinLevel) {
                 highestMinLevel = entry.getValue();
                 eligibleRarityKey = entry.getKey();
             }
         }
-
+        System.out.println("ROLL RARITY: context level=" + mobLevel + " eligible=" + eligibleRarityKey);
         if (eligibleRarityKey == null) {
             cir.setReturnValue(null);
             return;
+
         }
 
         try {
-            LootRarity rarity = RarityRegistry.byLegacyId(eligibleRarityKey).get();
-            cir.setReturnValue(rarity);
+            LootRarity eligibleRarity = RarityRegistry.byLegacyId(eligibleRarityKey).get();
+            net.kayn.fallen_gems_affixes.adventure.boss.UniversalBossConfig config =
+                    net.kayn.fallen_gems_affixes.adventure.boss.UniversalBossLoader.getConfig();
+            if (config == null) { cir.setReturnValue(null); return; }
+
+            Float chance = null;
+            for (Map.Entry<dev.shadowsoffire.apotheosis.adventure.loot.LootRarity, Float> entry : config.tierChances().entrySet()) {
+                if (eligibleRarityKey.equals(config.getRarityKey(entry.getKey()))) {
+                    chance = entry.getValue();
+                    break;
+                }
+            }
+
+            System.out.println("CHANCE FOR " + eligibleRarityKey + ": " + chance);
+
+            if (chance == null || rand.nextFloat() >= chance) { cir.setReturnValue(null); return; }
+
+            cir.setReturnValue(eligibleRarity);
         } catch (Exception e) {
             cir.setReturnValue(null);
         }

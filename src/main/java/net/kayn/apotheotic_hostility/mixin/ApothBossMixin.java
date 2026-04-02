@@ -124,7 +124,6 @@ public class ApothBossMixin {
                     .max(Comparator.comparingInt(LootRarity::ordinal));
 
             if (chosen.isEmpty()) {
-                ApotheoticHostility.LOGGER.info("Discarding boss {} (level {}) - no eligible rarity", bossId, lvl);
 
                 entity.getPersistentData().putBoolean("apoth_hostility.discard", true);
 

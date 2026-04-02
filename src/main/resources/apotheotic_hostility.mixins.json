@@ -14,7 +14,6 @@
     "ItemFrameGemsProcessorMixin",
     "ItemPopulatorMixin",
     "JEICompatMixin",
-    "LootModifierDebugMixin",
     "RagnarokTraitMixin",
     "SpawnerLogicExtMixin",
     "TraitSymbolMixin"

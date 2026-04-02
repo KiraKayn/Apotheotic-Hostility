@@ -23,7 +23,6 @@ public class UniversalBossEventHandlerMixin {
             remap = false
     )
     private static void checkMinLevel(MobSpawnEvent.FinalizeSpawn event, CallbackInfo ci) {
-        System.out.println("FGA EVENT MIXIN FIRED");
         if (!ModList.get().isLoaded("fallen_gems_affixes")) return;
         if (!(event.getEntity() instanceof Mob)) return;
         Mob mob = event.getEntity();
@@ -31,6 +30,9 @@ public class UniversalBossEventHandlerMixin {
 
         int mobLevel = MobTraitCap.HOLDER.get(mob).getLevel();
         Map<String, Integer> minLevels = UniversalBossLevelConfig.getAllMinLevels();
+
+        System.out.println("CHECK MIN LEVEL: entity=" + mob.getType() + " level=" + mobLevel + " minLevels=" + minLevels);
+
         if (minLevels.isEmpty()) return;
 
         int lowestMinLevel = minLevels.values().stream().min(Integer::compare).orElse(0);
