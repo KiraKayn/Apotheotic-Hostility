@@ -19,7 +19,6 @@ public class UniversalBossEventHandlerMixin {
     @Inject(
             method = "onEntityJoin",
             at = @At("HEAD"),
-            cancellable = true,
             remap = false
     )
     private static void checkMinLevel(MobSpawnEvent.FinalizeSpawn event, CallbackInfo ci) {
@@ -28,20 +27,10 @@ public class UniversalBossEventHandlerMixin {
         Mob mob = event.getEntity();
         if (!MobTraitCap.HOLDER.isProper(mob)) return;
 
-        int mobLevel = MobTraitCap.HOLDER.get(mob).getLevel();
         Map<String, Integer> minLevels = UniversalBossLevelConfig.getAllMinLevels();
-
-        System.out.println("CHECK MIN LEVEL: entity=" + mob.getType() + " level=" + mobLevel + " minLevels=" + minLevels);
-
         if (minLevels.isEmpty()) return;
 
-        int lowestMinLevel = minLevels.values().stream().min(Integer::compare).orElse(0);
-        if (mobLevel < lowestMinLevel) {
-            MobLevelContext.clear();
-            ci.cancel();
-            return;
-        }
-
+        int mobLevel = MobTraitCap.HOLDER.get(mob).getLevel();
         MobLevelContext.set(mobLevel);
     }
 

@@ -11,17 +11,19 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Map;
+import java.util.Set;
 
 @Mixin(targets = "net.kayn.fallen_gems_affixes.adventure.boss.UniversalBossConfig", remap = false)
 public class UniversalBossConfigMixin {
 
     @Inject(
-            method = "rollRarity",
+            method = "rollRarity(Lnet/minecraft/util/RandomSource;Ljava/util/Set;)Ldev/shadowsoffire/apotheosis/adventure/loot/LootRarity;",
             at = @At("HEAD"),
             cancellable = true,
             remap = false
     )
-    private void filterRarityByLevel(RandomSource rand, CallbackInfoReturnable<LootRarity> cir) {
+    private void filterRarityByLevel(RandomSource rand, Set<LootRarity> allowed,
+                                     CallbackInfoReturnable<LootRarity> cir) {
         int mobLevel = MobLevelContext.get();
         if (mobLevel < 0) return;
 
@@ -31,37 +33,52 @@ public class UniversalBossConfigMixin {
         String eligibleRarityKey = null;
         int highestMinLevel = -1;
         for (Map.Entry<String, Integer> entry : minLevels.entrySet()) {
-            if (mobLevel >= entry.getValue() && entry.getValue() > highestMinLevel) {
-                highestMinLevel = entry.getValue();
-                eligibleRarityKey = entry.getKey();
+            if (mobLevel < entry.getValue()) continue;
+            if (entry.getValue() <= highestMinLevel) continue;
+
+            if (allowed != null) {
+                try {
+                    LootRarity candidate = RarityRegistry.byLegacyId(entry.getKey()).get();
+                    if (!allowed.contains(candidate)) continue;
+                } catch (Exception e) {
+                    continue;
+                }
             }
+
+            highestMinLevel = entry.getValue();
+            eligibleRarityKey = entry.getKey();
         }
-        System.out.println("ROLL RARITY: context level=" + mobLevel + " eligible=" + eligibleRarityKey);
+
         if (eligibleRarityKey == null) {
             cir.setReturnValue(null);
             return;
-
         }
 
         try {
             LootRarity eligibleRarity = RarityRegistry.byLegacyId(eligibleRarityKey).get();
+
             net.kayn.fallen_gems_affixes.adventure.boss.UniversalBossConfig config =
                     net.kayn.fallen_gems_affixes.adventure.boss.UniversalBossLoader.getConfig();
-            if (config == null) { cir.setReturnValue(null); return; }
+            if (config == null) {
+                cir.setReturnValue(null);
+                return;
+            }
 
             Float chance = null;
-            for (Map.Entry<dev.shadowsoffire.apotheosis.adventure.loot.LootRarity, Float> entry : config.tierChances().entrySet()) {
+            for (Map.Entry<LootRarity, Float> entry : config.tierChances().entrySet()) {
                 if (eligibleRarityKey.equals(config.getRarityKey(entry.getKey()))) {
                     chance = entry.getValue();
                     break;
                 }
             }
 
-            System.out.println("CHANCE FOR " + eligibleRarityKey + ": " + chance);
-
-            if (chance == null || rand.nextFloat() >= chance) { cir.setReturnValue(null); return; }
+            if (chance == null || rand.nextFloat() >= chance) {
+                cir.setReturnValue(null);
+                return;
+            }
 
             cir.setReturnValue(eligibleRarity);
+
         } catch (Exception e) {
             cir.setReturnValue(null);
         }

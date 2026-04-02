@@ -1,11 +1,11 @@
 {
   "tier_chances": {
-    "common": 0.06,
-    "uncommon": 0.05,
-    "rare": 0.04,
-    "epic": 0.03,
-    "mythic": 0.02,
-    "ancient": 0.01
+    "common": 1,
+    "uncommon":1,
+    "rare": 1,
+    "epic": 1,
+    "mythic": 1,
+    "ancient": 1
   },
   "tier_min_levels": {
     "common":   1,
