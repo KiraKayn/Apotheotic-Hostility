@@ -22,40 +22,46 @@ public class UniversalBossConfigMixin {
             cancellable = true,
             remap = false
     )
-    private void filterRarityByLevel(RandomSource rand, Set<LootRarity> allowed,
-                                     CallbackInfoReturnable<LootRarity> cir) {
+    private void applyLevelFilter(RandomSource rand, Set<LootRarity> allowed,
+                                  CallbackInfoReturnable<LootRarity> cir) {
+
         int mobLevel = MobLevelContext.get();
         if (mobLevel < 0) return;
 
-        Map<String, Integer> minLevels = UniversalBossLevelConfig.getAllMinLevels();
+        Map<String, Integer> minLevels = UniversalBossLevelConfig.getMinLevels();
         if (minLevels.isEmpty()) return;
 
-        String eligibleRarityKey = null;
+
+        String eligibleKey = null;
         int highestMinLevel = -1;
+
         for (Map.Entry<String, Integer> entry : minLevels.entrySet()) {
-            if (mobLevel < entry.getValue()) continue;
-            if (entry.getValue() <= highestMinLevel) continue;
+            String rarityKey = entry.getKey();
+            int minLevel = entry.getValue();
+
+            if (mobLevel < minLevel) continue;
 
             if (allowed != null) {
                 try {
-                    LootRarity candidate = RarityRegistry.byLegacyId(entry.getKey()).get();
+                    LootRarity candidate = RarityRegistry.byLegacyId(rarityKey).get();
                     if (!allowed.contains(candidate)) continue;
                 } catch (Exception e) {
                     continue;
                 }
             }
 
-            highestMinLevel = entry.getValue();
-            eligibleRarityKey = entry.getKey();
+            if (minLevel > highestMinLevel) {
+                highestMinLevel = minLevel;
+                eligibleKey = rarityKey;
+            }
         }
-
-        if (eligibleRarityKey == null) {
+        if (eligibleKey == null) {
             cir.setReturnValue(null);
             return;
         }
 
         try {
-            LootRarity eligibleRarity = RarityRegistry.byLegacyId(eligibleRarityKey).get();
+            LootRarity eligibleRarity = RarityRegistry.byLegacyId(eligibleKey).get();
 
             net.kayn.fallen_gems_affixes.adventure.boss.UniversalBossConfig config =
                     net.kayn.fallen_gems_affixes.adventure.boss.UniversalBossLoader.getConfig();
@@ -65,9 +71,9 @@ public class UniversalBossConfigMixin {
             }
 
             Float chance = null;
-            for (Map.Entry<LootRarity, Float> entry : config.tierChances().entrySet()) {
-                if (eligibleRarityKey.equals(config.getRarityKey(entry.getKey()))) {
-                    chance = entry.getValue();
+            for (Map.Entry<LootRarity, Float> e : config.tierChances().entrySet()) {
+                if (eligibleKey.equals(config.getRarityKey(e.getKey()))) {
+                    chance = e.getValue();
                     break;
                 }
             }

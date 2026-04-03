@@ -129,7 +129,7 @@ dependencies {
 
     implementation fg.deobf("io.github.rtxyd:fallen-lib:${fallen_lib_version}:core")
     implementation fg.deobf("io.github.rtxyd:fallen-lib:${fallen_lib_version}:runtime")
-    implementation fg.deobf("curse.maven:fallen-gems-affixes-1286177:7863309")
+    implementation fg.deobf("curse.maven:fallen-gems-affixes-1286177:7863848")
 }
 
 mixin {

@@ -9,44 +9,44 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class UniversalBossLevelConfig extends SimpleJsonResourceReloadListener {
 
-    private static final Gson GSON = new Gson();
     public static final UniversalBossLevelConfig INSTANCE = new UniversalBossLevelConfig();
-    private static final Map<String, Integer> RARITY_MIN_LEVELS = new HashMap<>();
+
+    private static Map<String, Integer> RARITY_MIN_LEVELS = Collections.emptyMap();
 
     public UniversalBossLevelConfig() {
-        super(GSON, "universal_boss");
+        super(new Gson(), "universal_boss");
     }
 
     @Override
     protected void apply(Map<ResourceLocation, JsonElement> objects, ResourceManager manager, ProfilerFiller profiler) {
-        RARITY_MIN_LEVELS.clear();
-        System.out.println("UNIVERSAL BOSS APPLY CALLED, files: " + objects.keySet());
-        for (JsonElement element : objects.values()) {
-            JsonObject json = element.getAsJsonObject();
-            System.out.println("JSON KEYS IN FILE: " + json.keySet());
-            if (!json.has("tier_min_levels")) {
-                System.out.println("NO tier_min_levels FOUND");
-                continue;
-            }
+        Map<String, Integer> loaded = new LinkedHashMap<>();
+
+        for (Map.Entry<ResourceLocation, JsonElement> file : objects.entrySet()) {
+            JsonObject json = file.getValue().getAsJsonObject();
+            if (!json.has("tier_min_levels")) continue;
+
             JsonObject tiers = json.getAsJsonObject("tier_min_levels");
             for (Map.Entry<String, JsonElement> entry : tiers.entrySet()) {
-                RARITY_MIN_LEVELS.put(entry.getKey(), entry.getValue().getAsInt());
+                loaded.put(entry.getKey(), entry.getValue().getAsInt());
             }
-            break;
         }
-        ApotheoticHostility.LOGGER.info("universal_boss rarity min levels loaded: {}", RARITY_MIN_LEVELS);
+
+        RARITY_MIN_LEVELS = Collections.unmodifiableMap(loaded);
+
+        if (RARITY_MIN_LEVELS.isEmpty()) {
+            ApotheoticHostility.LOGGER.info("universal_boss: no tier_min_levels found — level filtering disabled.");
+        } else {
+            ApotheoticHostility.LOGGER.info("universal_boss: tier_min_levels loaded: {}", RARITY_MIN_LEVELS);
+        }
     }
 
-    public static int getMinLevelForRarity(String rarity) {
-        return RARITY_MIN_LEVELS.getOrDefault(rarity, 0);
-    }
-
-    public static Map<String, Integer> getAllMinLevels() {
+    public static Map<String, Integer> getMinLevels() {
         return RARITY_MIN_LEVELS;
     }
 }

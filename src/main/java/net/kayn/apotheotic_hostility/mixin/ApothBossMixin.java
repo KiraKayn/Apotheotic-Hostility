@@ -59,6 +59,8 @@ public class ApothBossMixin {
         try {
             if (rarity != null) return;
 
+
+            if (entity.getPersistentData().contains("fga.universal_boss")) return;
             ResourceLocation bossId = null;
             for (ResourceLocation key : BossRegistry.INSTANCE.getKeys()) {
                 var apoth = BossRegistry.INSTANCE.getValue(key);

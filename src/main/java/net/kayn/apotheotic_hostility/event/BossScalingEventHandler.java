@@ -24,6 +24,7 @@ public class BossScalingEventHandler {
         if (event.getLevel().isClientSide()) return;
         if (!(event.getEntity() instanceof Mob mob)) return;
         if (!mob.getPersistentData().getBoolean("apoth.boss")) return;
+        if (mob.getPersistentData().contains("fga.universal_boss")) return;
 
         ResourceLocation bossId = null;
         for (ResourceLocation key : BossRegistry.INSTANCE.getKeys()) {
